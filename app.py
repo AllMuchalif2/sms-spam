@@ -139,7 +139,7 @@ elif menu == "Visualisasi Data":
         st.warning("Tidak ada data untuk kategori ini.")
     
     # 4. Confusion Matrix
-    st.subheader("4. Confusion Matrix (Evaluasi Model)")
+    st.subheader("4. Confusion Matrix (Total Data)")
     st.info("Confusion Matrix menunjukkan performa model dalam memprediksi setiap kategori.")
     
     if model_loaded:
@@ -168,6 +168,35 @@ elif menu == "Visualisasi Data":
         - **Diagonal** (kiri atas ke kanan bawah) = Prediksi yang **BENAR**
         - **Di luar diagonal** = Prediksi yang **SALAH**
         - Angka menunjukkan jumlah SMS yang diprediksi untuk setiap kombinasi kategori
+        """)
+        
+        # Calculate metrics
+        total_correct = cm[0,0] + cm[1,1] + cm[2,2]
+        total_samples = cm.sum()
+        accuracy = (total_correct / total_samples) * 100
+        
+        # Per-class accuracy
+        normal_correct = cm[0,0]
+        normal_total = cm[0,:].sum()
+        penipuan_correct = cm[1,1]
+        penipuan_total = cm[1,:].sum()
+        promo_correct = cm[2,2]
+        promo_total = cm[2,:].sum()
+        
+        # Display insights
+        st.markdown("### 📊 Insight:")
+        st.success(f"**Akurasi Model: {accuracy:.2f}%** ({total_correct} dari {total_samples} SMS diprediksi dengan benar)")
+        
+        st.markdown(f"""
+        **Performa per Kategori:**
+        - **Normal**: {normal_correct}/{normal_total} benar ({(normal_correct/normal_total*100):.1f}%)
+        - **Penipuan**: {penipuan_correct}/{penipuan_total} benar ({(penipuan_correct/penipuan_total*100):.1f}%)
+        - **Promo**: {promo_correct}/{promo_total} benar ({(promo_correct/promo_total*100):.1f}%)
+        
+        **Kesimpulan:**
+        - Model menunjukkan performa yang {'sangat baik' if accuracy >= 90 else 'baik' if accuracy >= 80 else 'cukup baik'} dengan akurasi {accuracy:.2f}%
+        - Kategori dengan prediksi terbaik: **{['Normal', 'Penipuan', 'Promo'][max(enumerate([normal_correct/normal_total, penipuan_correct/penipuan_total, promo_correct/promo_total]), key=lambda x: x[1])[0]]}**
+        - Model ini efektif untuk membantu pengguna mengidentifikasi SMS berbahaya dan promosi
         """)
     else:
         st.error("Model belum dimuat dengan benar.")
