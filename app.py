@@ -5,6 +5,7 @@ import re
 import matplotlib.pyplot as plt
 import seaborn as sns
 from wordcloud import WordCloud
+from sklearn.metrics import confusion_matrix
 
 # --- KONFIGURASI HALAMAN ---
 st.set_page_config(
@@ -136,3 +137,37 @@ elif menu == "Visualisasi Data":
         st.pyplot(fig3)
     else:
         st.warning("Tidak ada data untuk kategori ini.")
+    
+    # 4. Confusion Matrix
+    st.subheader("4. Confusion Matrix (Evaluasi Model)")
+    st.info("Confusion Matrix menunjukkan performa model dalam memprediksi setiap kategori.")
+    
+    if model_loaded:
+        # Generate predictions for the entire dataset
+        X_vec = vectorizer.transform(df['Teks_Bersih'])
+        y_pred = model.predict(X_vec)
+        y_test = df['label'].values
+        
+        # Create confusion matrix
+        cm = confusion_matrix(y_test, y_pred)
+        
+        # Plot confusion matrix
+        fig4, ax4 = plt.subplots(figsize=(8, 6))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                    xticklabels=['Normal', 'Penipuan', 'Promo'],
+                    yticklabels=['Normal', 'Penipuan', 'Promo'],
+                    ax=ax4)
+        ax4.set_title('Confusion Matrix (Evaluasi Model)', fontsize=15)
+        ax4.set_xlabel('Tebakan Model (Predicted)')
+        ax4.set_ylabel('Kunci Jawaban (Actual)')
+        st.pyplot(fig4)
+        
+        # Add explanation
+        st.markdown("""
+        **Cara Membaca:**
+        - **Diagonal** (kiri atas ke kanan bawah) = Prediksi yang **BENAR**
+        - **Di luar diagonal** = Prediksi yang **SALAH**
+        - Angka menunjukkan jumlah SMS yang diprediksi untuk setiap kombinasi kategori
+        """)
+    else:
+        st.error("Model belum dimuat dengan benar.")
