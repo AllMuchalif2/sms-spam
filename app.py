@@ -185,7 +185,7 @@ elif menu == "Visualisasi Data":
         
         # Display insights
         st.markdown("### 📊 Insight:")
-        st.success(f"**Akurasi Model: {accuracy:.2f}%** ({total_correct} dari {total_samples} SMS diprediksi dengan benar)")
+        st.info(f"**Akurasi Model: {accuracy:.2f}%** ({total_correct} dari {total_samples} SMS diprediksi dengan benar)")
         
         st.markdown(f"""
         **Performa per Kategori:**
